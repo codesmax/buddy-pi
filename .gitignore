@@ -1,0 +1,6 @@
+.idea
+env
+keys/
+config.yml
+._*
+*.mp3
