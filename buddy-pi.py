@@ -14,12 +14,14 @@ from playsound import playsound
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 MODELS_PATH=os.path.join(SCRIPT_PATH, 'models')
+SOUNDS_PATH=os.path.join(SCRIPT_PATH, 'sounds')
+
 BASE_PROMPT=[
     { 'role': 'system',
       'content': 'Your name is Buddy. You are friendly, enthusiastic, and offer concise responses appropriate for young children.'},
 ]
 
-with open('config.yml', 'r') as file:
+with open(os.path.join(SCRIPT_PATH, 'config.yml'), 'r') as file:
     CONFIG = yaml.safe_load(file)
 
 gpt_client = OpenAI(api_key=CONFIG['keys']['openai'])
@@ -97,7 +99,9 @@ def record_prompt():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         try:
+            print("==> Listening for prompt...")
             audio = r.listen(source, timeout=10, phrase_time_limit=30)
+            print("==> Finished recording prompt\n")
             return r.recognize_google_cloud(audio)
         except sr.WaitTimeoutError:
             print("[ERROR]: Timed out waiting to record prompt")
@@ -121,10 +125,10 @@ def play_response(text):
             voice='nova',
             input=text,
     ) as response:
-        response.stream_to_file('response.mp3')
+        response.stream_to_file(os.path.join(SOUNDS_PATH, 'response.mp3'))
 
-    print("==> Playing response audio...")
-    playsound('response.mp3')
+    print("==> Done. Playing response audio...")
+    playsound(os.path.join(SOUNDS_PATH, 'response.mp3'))
     print("==> Finished playing response audio\n")
 
 def main():
@@ -136,11 +140,11 @@ def main():
             if wake_word():
                 print("==> Wake word detected!\n")
                 new_session = False
-                playsound('sounds/awake.wav')
+                playsound(os.path.join(SOUNDS_PATH, 'awake.wav'))
 
         print("==> Start speaking...")
         prompt = record_prompt()
-        playsound('sounds/done.wav')
+        playsound(os.path.join(SOUNDS_PATH, 'done.wav'))
         if prompt is None:
             print("==> Prompt could not be recorded")
             play_response("I didn't get that. Please try again later.")

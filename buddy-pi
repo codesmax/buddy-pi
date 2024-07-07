@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-export PYTHONIOENCODING=utf-8
-export GOOGLE_APPLICATION_CREDENTIALS=keys/buddy-pi-key.json
+SCRIPTPATH=$(dirname $0)
 
-source env/bin/activate
-python buddy-pi.py
+export PYTHONIOENCODING=utf-8
+export GOOGLE_APPLICATION_CREDENTIALS=$SCRIPTPATH/keys/buddy-pi-key.json
+
+source $SCRIPTPATH/env/bin/activate
+python $SCRIPTPATH/buddy-pi.py
